@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('Gitcheckout') {
+            steps {
+         git branch: 'main', credentialsId: 'gitcred', url: 'https://github.com/chitty309/JenkinsWar-master.git'
+        }
+        }
+       stage('build') {
+            steps {
+             bat 'mvn clean install'
+        }
+        }
+        stage('codequality') {
+            steps {
+             bat 'mvn sonar:sonar'
+        }
+        }
+        stage('deploy') {
+            steps {
+             deploy adapters: [tomcat8(credentialsId: 'tom', path: '', url: 'http://localhost:8001/')], contextPath: null, war: '**/*.war'
+            }
+        }
+}
+}
